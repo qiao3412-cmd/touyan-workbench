@@ -588,10 +588,37 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica N
 .switch input:checked + .slider{background:var(--primary)}
 .switch input:checked + .slider:before{transform:translateX(20px)}
 
+/* ===== 私密数据解锁模态 ===== */
+.wb-lock{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;text-align:center;color:var(--muted)}
+.wb-lock-icon{font-size:1.6rem;font-weight:700;color:var(--primary);margin-bottom:8px}
+.wb-lock-t{font-size:1rem;font-weight:700;color:var(--text);margin-bottom:4px}
+.wb-lock-s{font-size:.78rem;margin-bottom:16px}
+.wb-unlock-btn{background:var(--primary);color:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:.85rem;font-weight:600;cursor:pointer}
+.wb-unlock-btn:hover{background:var(--primary-light)}
+.unlock-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9999;align-items:center;justify-content:center;padding:20px}
+.unlock-card{background:#fff;border-radius:16px;padding:26px 24px;max-width:340px;width:100%;text-align:center;box-shadow:0 10px 40px rgba(0,0,0,.25)}
+.unlock-icon{font-size:1.8rem;font-weight:700;color:var(--primary);margin-bottom:8px}
+.unlock-title{font-size:1.1rem;font-weight:700;color:var(--primary);margin-bottom:6px}
+.unlock-sub{font-size:.78rem;color:var(--muted);margin-bottom:16px;line-height:1.5}
+.unlock-input{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-size:.95rem;text-align:center;margin-bottom:10px;outline:none}
+.unlock-input:focus{border-color:var(--primary)}
+.unlock-error{color:var(--red);font-size:.75rem;min-height:18px;margin-bottom:8px}
+.unlock-btn{width:100%;background:var(--primary);color:#fff;border:none;border-radius:8px;padding:11px;font-size:.9rem;font-weight:700;cursor:pointer}
+.unlock-btn:hover{background:var(--primary-light)}
 </style>
 </head>
 <body>
 <script>window.__BOOT__={"updatedAt": "2026-08-16 17:24", "source": "iFinD", "market": {"us": [{"name": "道琼斯", "value": "53,839.99", "change": "+0.13%", "dir": "up"}, {"name": "纳斯达克", "value": "26,803.03", "change": "+0.81%", "dir": "up"}, {"name": "标普500", "value": "7,798.99", "change": "+0.65%", "dir": "up"}], "hk": [{"name": "恒生指数", "value": "25,396.51", "change": "-0.17%", "dir": "down"}, {"name": "恒生科技", "value": "4,792.39", "change": "+0.33%", "dir": "up"}, {"name": "国企指数", "value": "8,426.49", "change": "-0.23%", "dir": "down"}, {"name": "红筹指数", "value": "1,888.80", "change": "+0.40%", "dir": "up"}], "a": [{"name": "上证指数", "value": "3,926.96", "change": "-0.50%", "dir": "down"}, {"name": "深证成指", "value": "14,289.44", "change": "-0.87%", "dir": "down"}, {"name": "创业板指", "value": "3,586.04", "change": "-0.45%", "dir": "down"}, {"name": "科创50", "value": "1,717.68", "change": "-1.11%", "dir": "down"}, {"name": "北证50", "value": "1,087.52", "change": "-0.94%", "dir": "down"}]}, "trend": {"dates": ["08-07", "08-10", "08-11", "08-12", "08-13"], "northbound": [3451.5, 3220.3, 2966.7, 2822.9, 3147.7], "marketPct": {"sp500": [0.62, -0.06, -0.06, 0.32, 0.65], "hsi": [0.54, 1.05, -1.1, -0.83, -0.17], "shanghai": [1.02, 0.67, -0.82, 0.32, -0.5]}}, "hotnews": [{"time": "08:30", "tag": "宏观", "tagCls": "tag-macro", "title": "央行8月14日开展1万亿元买断式逆回购操作，等量续作并首次月中开展隔夜逆回购", "summary": "期限6个月(185天)，到期日2027年2月15日。8月将有1万亿元6个月期买断式逆回购到期，为等量续作。同时首次在月中开展隔夜逆回购操作(单日上限6000亿)", "impact": "偏多：释放流动性平稳信号，利好银行板块及整体权益市场情绪", "dir": "bull", "url": "https://finance.sina.com.cn/money/bond/2026-08-14/doc-ininfrty2783289.shtml"}, {"time": "08:30", "tag": "海外", "tagCls": "tag-oversea", "title": "特朗普对进口无人机及零部件征收10%至100%关税", "summary": "对最大起飞重量超25公斤及具备热成像功能的无人机征收100%关税，对较小无人机征收25%关税，对欧盟/日本/韩国等征收15%关税，21天后生效", "impact": "偏多国内无人机/军工替代链，利空全球消费电子供应链", "dir": "bull", "url": "https://www.stcn.com/article/detail/4075078.html"}, {"time": "08:30", "tag": "行业", "tagCls": "tag-industry", "title": "中芯国际Q2净利增2.6倍至4.79亿美元，海光信息上半年净利增49.69%", "summary": "中芯国际Q2营收30亿美元(+36.1% YoY, +20% QoQ)，毛利率25.3%，产能利用率93.7%，Q3指引收入环比增2%-4%。海光信息H1营收90.99亿(+66.52%)，净利17.98亿(+49.69%)", "impact": "偏多：半导体国产替代+AI算力需求双轮驱动，业绩进入上行周期", "dir": "bull", "url": "https://www.163.com/dy/article/L49B7C7H05198NMR.html"}, {"time": "08:30", "tag": "市场", "tagCls": "tag-macro", "title": "MSCI季度调仓：新纳入31只A股，剔除25只，8月31日生效", "summary": "MSCI中国指数新纳入智谱、鼎泰高科、华峰测控等31只A股，剔除北汽蓝谷、万泰生物等25只。被动资金通常在生效日尾盘调仓", "impact": "偏多：新纳入个股或迎增量被动资金", "dir": "bull", "url": "https://new.qq.com/rain/a/20260814A040SO00"}, {"time": "08:30", "tag": "行业", "tagCls": "tag-industry", "title": "中际旭创17.47亿元入股中石科技10.47%股份，光模块散热催化CPO概念", "summary": "高端光模块持续放量带动散热需求，中石科技、阿莱德、富信科技20cm涨停，剑桥科技、鼎通科技等多股跟涨", "impact": "偏多：算力基础设施投资高景气延续，光模块主线强化", "dir": "bull", "url": "https://m.10jqka.com.cn/20260814/c678960183.shtml"}, {"time": "08:30", "tag": "海外", "tagCls": "tag-oversea", "title": "DeepSeek V4 Pro正式上线，API输出token单价最高涨约350%", "summary": "新价8月17日零时生效。阿里同步开源Qwen3.8-2.4T(92层、2.4T参数、激活95B)，国产超大模型架构走向趋同", "impact": "中性偏多：AI应用商业化加速，关注算力链受益程度", "dir": "bull", "url": "https://new.qq.com/rain/a/20260814A08V6O00"}], "macro": [{"time": "20:30", "region": "us", "content": "美国7月PPI同比+4.7%（低于预期4.9%，前值5.5%），通胀压力进一步缓解", "tag": "美国"}, {"time": "20:30", "region": "us", "content": "美国至8月8日当周初请失业金人数20.9万（预期20.2万，前值修正为20万）", "tag": "美国"}, {"time": "今日", "region": "us", "content": "今日关注：美国7月零售销售月率（北京时间20:30公布）", "tag": "美国"}, {"time": "今日", "region": "cn", "content": "央行8月14日开展1万亿元买断式逆回购操作（等量续作，期限6个月）", "tag": "中国"}, {"time": "今日", "region": "cn", "content": "国内成品油将开启新一轮调价窗口", "tag": "中国"}], "policy": [{"date": "08-13", "text": "央行二季度货币政策执行报告：继续实施适度宽松货币政策，将适时出台务实管用增量政策，加大逆周期调节力度"}, {"date": "08-14", "text": "央行8月14日开展1万亿元买断式逆回购操作，等量续作并首次月中开展隔夜逆回购(单日上限6000亿)"}, {"date": "08-13", "text": "工信部、应急管理部发布《安全应急装备产业发展\"十五五\"规划》，提出到2030年重点领域产业规模达1.4万亿元"}, {"date": "08-14", "text": "商务部：自8月14日起对原产于印度的进口单模光纤继续征收反倾销税，实施期限5年"}, {"date": "08-13", "text": "广东省与阿里巴巴签署战略合作框架协议，在算力基础设施、集成电路、AI等领域深化合作"}, {"date": "08-13", "text": "上海印发促进民间投资发展行动方案，支持科技型企业登陆多层次资本市场"}], "stocks": {"300059": {"price": 19.47, "changePct": -1.5672, "mktCap": "3080.58亿", "pe": "23.5027", "high52": 25.71, "low52": 17.22, "pb": 3.266}, "300308": {"price": 943, "changePct": 2.3843, "mktCap": "1.107万亿", "pe": "73.7888", "high52": 1416.88, "low52": 235.11, "pb": 31.3156}, "300750": {"price": 393.93, "changePct": -0.598, "mktCap": "1.8577万亿", "pe": "21.4421", "high52": 468.75, "low52": 272.05, "pb": 4.884}, "600036": {"price": 38.46, "changePct": -0.7996, "mktCap": "9838.44亿", "pe": "6.4343", "high52": 43.02, "low52": 35.28, "pb": 0.8725}, "600519": {"price": 1341.99, "changePct": -0.9813, "mktCap": "1.6776万亿", "pe": "20.2816", "high52": 1568, "low52": 1151.01, "pb": 6.6769}, "601012": {"price": 12.65, "changePct": -0.3937, "mktCap": "958.62亿", "pe": "-13.8754", "high52": 20.05, "low52": 11.41, "pb": 1.8993}, "601138": {"price": 66.19, "changePct": 1.4717, "mktCap": "1.3135万亿", "pe": "27.9984", "high52": 84.95, "low52": 41.66, "pb": 8.0654}, "601318": {"price": 51.75, "changePct": -1.9886, "mktCap": "9033.99亿", "pe": "7.0571", "high52": 74.88, "low52": 46.9, "pb": 0.9374}, "601899": {"price": 32.53, "changePct": 0.9935, "mktCap": "8504.54亿", "pe": "14.0217", "high52": 44.94, "low52": 20.19, "pb": 4.5652}, "603259": {"price": 159.24, "changePct": -1.9035, "mktCap": "4810.09亿", "pe": "21.926", "high52": 166.66, "low52": 87.09, "pb": 5.7016}, "603435": {"price": 53.91, "changePct": 1.5445, "mktCap": "247.53亿", "pe": "100.8156", "high52": 140.91, "low52": 38.96, "pb": 11.619}, "603538": {"price": 30.21, "changePct": -7.2459, "mktCap": "102.69亿", "pe": "87.8739", "high52": 70.39, "low52": 18.97, "pb": 3.5478}, "688041": {"price": 280.99, "changePct": -1.7517, "mktCap": "6531.15亿", "pe": "207.8724", "high52": 395.17, "low52": 146.77, "pb": 25.7403}, "688981": {"price": 132.87, "changePct": 2.6499, "mktCap": "7067.14亿", "pe": "225.4469", "high52": 176.34, "low52": 88.19, "pb": 5.9691}, "002594": {"price": 88.9, "changePct": -0.9029, "mktCap": "7642.41亿", "pe": "29.4214", "high52": 111.82, "low52": 77.6, "pb": 3.5245}, "002475": {"price": 56.58, "changePct": 0.9276, "mktCap": "4360.89亿", "pe": "25.4304", "high52": 81.78, "low52": 37.98, "pb": 5.0137}, "000725": {"price": 5.81, "changePct": -0.8532, "mktCap": "2142.82亿", "pe": "36.1716", "high52": 9.5, "low52": 3.79, "pb": 1.5816}}};</script>
+<div id="unlock-modal" class="unlock-modal">
+  <div class="unlock-card">
+    <div class="unlock-icon">锁</div>
+    <div class="unlock-title">私密数据已加密</div>
+    <div class="unlock-sub">自选股 / 深度诊断 / 事件推演已加密保护。<br>请输入访问密码以查看你的私人数据。</div>
+    <input id="unlock-pwd" class="unlock-input" type="password" placeholder="访问密码" autocomplete="off" />
+    <div id="unlock-error" class="unlock-error"></div>
+    <button id="unlock-btn" class="unlock-btn">解锁</button>
+  </div>
+</div>
 <div class="app">
   <!-- ===== Header ===== -->
   <header class="header">
@@ -1581,17 +1608,11 @@ var sampleHotNews=[
 ];
 
 /* ===== 深度投研 / 事件推演 示例数据（模板） ===== */
-var sampleDeepReports=[
-  {id:1,code:'300750',name:'宁德时代',rating:'强烈关注',score:78,date:'2026-08-12',
-   content:'【示例模板 · 请在对话中调用「调用诊断Skill，分析 300750」生成真实报告后替换】\n九维体检框架：业务拆解 / 核心财务（近5期）/ 盈利质量 / 估值 / 股东筹码 / 机构观点 / 产业链 / 风险扫描 / 综合评分。\n综合评分：基本面 82 / 成长性 78 / 估值吸引力 70 / 机构认可 85 / 风险可控度 74。\n（此条为版式示例，非真实体检结论，不构成投资建议。）'}
-];
-var sampleSimReports=[
-  {id:1,event:'央行发布二季度货币政策执行报告',dir:'利好',strength:'中',date:'2026-08-12',
-   content:'【示例模板 · 请在对话中调用「调用推演Skill，分析 央行二季度货币政策报告」生成真实推演后替换】\n五步推演框架：事件定性 → 传导路径（宏观→行业→公司）→ 受益/受损板块 → 核心标的（iFinD真实行情）→ 三情景推演 + 观察信号与证伪条件。\n（此条为版式示例，非真实推演结论，不构成投资建议。）'}
-];
+var sampleDeepReports='se0iGrOC5AEQ/cG7PtV75A==.8+J4L4CscDkdot6w.OCDHuCAuY329E4uCJnQ2BcaCQxjxCQwd385hba8SB1JDrvil6CefsaXDC6UGNlK+pJf9aPQhOhAfvdn/h511/uY51l5Qm9iNV08LFf9PSd6Y6ZZXbYfdeW18QKFq1aGGrsx1VHWCt59WZkihqM7prJ4oVTunn6HV9wAXR3BemZyMupqlFfVOZ4A9IxTM7XBGeduztlJTjU4Jvg+Pg6b5NOScMDIli7MexoMzPJfOIz0iJa+js5ZdhTd3z+JaXz2fka8OOxTH+mzM1YpFNaecz3r+rdJeQU3LlRu1bG68mM8LK5SIeQ6WJQgRrAxh98HO4MAVLtUQiqFDfjt2cAmxDuPktdPDyr1DVTFQcFOD8mUGMbeqIiRkgX67lvZRkqkMSF/D86jTHd7kEwn7McBX6QpYZGmnaJr9GhzFt47FJa9iGvxjKX1QSMEuyFPn+/Ey1JMLP9hc+cnv1Xh7HnVN8BICv7Kxb/y4RL527EA0h1JmqJhc40cb4L1hTRQdpH+/A40PAlfD+/XImXoe0TLPst0R8kZPgsQ+1BjqzFit0R5p05FDqnjGh6hcD+Fas2Bgb9oQ9PUjAjr6qPdi32+9T76QRCfdhxiueoF/PrORxCRaF0/GNr92zERcRpKdF9ftJMSI1nNVJcS43oFYkNhb4zQU7zGqkcoyFmVW/AbY3eDZLKGB6AiHcK/R4TdGFdCjkdY2Fra2KcdfXUFKOlHS018a0r/QHTtr9nP+XHk6hT/s6mLq39JbnPnKvGjm+y86nMZX4n8sX+dDE5pcQQ==';
+var sampleSimReports='MZNOSUy3tUw9+BK5qUfGRg==.BGaRqSJLBENB9/Y4.44udKSXCmQ7/Injx8DxocO067Bjeczf6ejKQR8igt0KlQT+qjNp+Am0ZQk9IcC55Znh4VbRiBiW9Kw+HYUcpqYOUVDREqZp3U7141Ino8obqWEa3NQodnsKtSqwfY5JFweo719pIr3yoGdJ76fNMYJv/kJ+AzAFa62dHRmw5u08UCJllrmM5RUpdN2kIatJCP7JyiTnDQ/cQsXW+VlQ8sj18hWFYHWSPXby+oTZQWBBsqHMQDhAX3tqxlN7WH31csRmi6Hj1q8GLbk/v0pppRTrGzcSN8UD+AjSvFoyMlBjnnqXuTVyNwcJuLqOVkPzwAW5ECHhaoTSw+umD+rEoYMhhI3DJI/ygeZ3+eNJvghnM7e63PhKcutetKfwxWweJXVOvYQOjwwPsA7DUi4eXS46zbu5kP1bZH7HnQ4/kwOuAYNb/W1pyFUSgIg9vNOcvZLnOwOn8sjj8PlqkDLie0fO+7TnRMjYdvw1kQ+GPZGoL6rfBmYH1WxjgxQJQLXklK1L9aDdn8qmLnpxWMGz0OGXbrFB+eQq4E3OOV2IPE2/Ic6SLmsuUh4BxPbgnO/2vE30l5Yiz2qKb69EGUMZXfU6HEPgO2cI5DpelrGbFgHCRHBo0zN+DgEEDuRgoxmrKkS3uJ6J2YQ3L7aHcRQp/2wEzeeEjV9ySoKMws56kBQUvrdTyQjCdPl39Gqay7FFJRbyOwsZahg1ZPFIYOSZtYOGA/C753GVUlDx3dcK8FEU=';
 
 /* ===== 自选股基础数据池 ===== */
-var sampleWatchlist=['300750','600519','688981'];
+var sampleWatchlist='vc1TpJ0fLg8n2F3lb8KFCg==.BgKMEPssNxsun8Gk.1wpU/IexKDJDQKM5yTc0/jGY9I7E1O6hvS7L0pfoVW/hY7vjviCpcZKh2Fs=';
 var STOCKS={
   '300750':{
     code:'300750',name:'宁德时代',market:'深交所 · 创业板',industry:'动力电池',listDate:'2018-06-11',
@@ -1862,6 +1883,72 @@ var MODULES=[
   {id:'settings',name:'设置与备份',icon:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/>',iconBg:'mi-settings',desc:'数据导出 / 导入恢复 / 备份管理，本地数据存储于浏览器，建议定期备份。',badgeKey:'settings'}
 ];
 
+/* ===== 私密数据解锁（方案A：自选股/诊断/推演加密托管） ===== */
+function wbB64ToBytes(b){
+  var bin=atob(b); var u8=new Uint8Array(bin.length);
+  for(var i=0;i<bin.length;i++) u8[i]=bin.charCodeAt(i);
+  return u8;
+}
+async function wbDecrypt(b64str,pwd){
+  var p=b64str.split('.');
+  if(p.length!==3) throw new Error('bad');
+  var salt=wbB64ToBytes(p[0]); var iv=wbB64ToBytes(p[1]); var ct=wbB64ToBytes(p[2]);
+  var km=await crypto.subtle.importKey('raw',new TextEncoder().encode(pwd),'PBKDF2',false,['deriveKey']);
+  var key=await crypto.subtle.deriveKey({name:'PBKDF2',salt:salt,iterations:100000,hash:'SHA-256'},km,{name:'AES-GCM',length:256},false,['decrypt']);
+  var pt=await crypto.subtle.decrypt({name:'AES-GCM',iv:iv},key,ct);
+  return new TextDecoder().decode(pt);
+}
+function isPrivateUnlocked(){
+  try{
+    [WATCH_KEY,DEEP_KEY,SIM_KEY].forEach(function(k){
+      var v=localStorage.getItem(k); if(!v) throw 0;
+      var a=JSON.parse(v); if(!Array.isArray(a)) throw 0;
+    });
+    return true;
+  }catch(e){ return false; }
+}
+function showLockPlaceholders(){
+  ['deep-report-list','sim-report-list','watch-list'].forEach(function(id){
+    var el=document.getElementById(id);
+    if(el) el.innerHTML='<div class="wb-lock"><div class="wb-lock-icon">锁</div><div class="wb-lock-t">私密数据已加密</div><div class="wb-lock-s">自选股 / 深度诊断 / 事件推演已加密保护</div><button class="wb-unlock-btn" onclick="showUnlockModal()">输入密码解锁</button></div>';
+  });
+}
+async function unlockPrivate(pwd){
+  if(!pwd){ var e=document.getElementById('unlock-error'); if(e) e.textContent='请输入密码'; return; }
+  try{
+    var w=JSON.parse(await wbDecrypt(sampleWatchlist,pwd));
+    var d=JSON.parse(await wbDecrypt(sampleDeepReports,pwd));
+    var s=JSON.parse(await wbDecrypt(sampleSimReports,pwd));
+    saveData(WATCH_KEY,w); saveData(DEEP_KEY,d); saveData(SIM_KEY,s);
+    closeUnlockModal();
+    renderWatch(); renderDeepReports(); renderSimReports();
+    showToast('私密数据已解锁');
+  }catch(e){
+    var el=document.getElementById('unlock-error');
+    if(el) el.textContent='密码错误，请重试（若持续失败请确认通过 https 线上链接打开）';
+  }
+}
+function setupPrivateData(){
+  if(isPrivateUnlocked()){ renderWatch(); renderDeepReports(); renderSimReports(); return; }
+  showLockPlaceholders();
+  showUnlockModal();
+}
+function showUnlockModal(){
+  var m=document.getElementById('unlock-modal'); if(m) m.style.display='flex';
+  var i=document.getElementById('unlock-pwd'); if(i) setTimeout(function(){i.focus();},50);
+}
+function closeUnlockModal(){
+  var m=document.getElementById('unlock-modal'); if(m) m.style.display='none';
+  var i=document.getElementById('unlock-pwd'); if(i) i.value='';
+  var e=document.getElementById('unlock-error'); if(e) e.textContent='';
+}
+(function(){
+  var btn=document.getElementById('unlock-btn');
+  if(btn) btn.addEventListener('click',function(){ var p=document.getElementById('unlock-pwd'); if(p) unlockPrivate(p.value); });
+  var inp=document.getElementById('unlock-pwd');
+  if(inp) inp.addEventListener('keydown',function(e){ if(e.key==='Enter'){ unlockPrivate(this.value); } });
+})();
+
 /* ===== Init ===== */
 function init(){
   var reports=loadData(REPORTS_KEY,sampleReports);
@@ -1887,9 +1974,7 @@ function init(){
   renderMarketTrend(trend);
   renderCapital(reports[0],trend);
   renderMacro(macro,policy);
-  renderWatch();
-  renderDeepReports();
-  renderSimReports();
+  setupPrivateData();
   updateStorageInfo();
 
   document.getElementById('import-input').addEventListener('change',importData);
