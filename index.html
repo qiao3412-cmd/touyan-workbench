@@ -1999,10 +1999,12 @@ function init(){
     });
   }else{
     // 在线模式：自动拉取腾讯云端实时行情（自选股+指数），对应页面激活时每 30 秒轮询；资讯层 best-effort 拉取
+    updateDataStatus('在线模式 · 刷新获取实时行情','real');
     updateLiveStatus('off','检测云端实时行情(腾讯)…');
-    refreshLiveQuotes();      // 自选股实时 + 联动指数
-    refreshMarketQuotes();    // 指数实时
-    refreshCloudNews();       // 热点快讯 best-effort（失败降级 iFinD 快照）
+    refreshLiveQuotes().then(function(){
+      refreshMarketQuotes();
+      refreshCloudNews();     // 热点快讯 best-effort（失败降级 iFinD 快照）
+    });
     if(window.__liveTimer) clearInterval(window.__liveTimer);
     window.__liveTimer=setInterval(function(){
       var pw=document.getElementById('page-watch');
@@ -3216,10 +3218,19 @@ function doAutoRefresh(){
 function manualRefresh(){
   var btn=document.getElementById('refresh-btn');
   if(btn){ btn.disabled=true; btn.classList.add('spinning'); }
-  fetchData(function(){
+  // 在线模式直接刷新腾讯实时行情；本地模式仍尝试 data.json/iFinD
+  if(isLocalFile()){
+    fetchData(function(){
+      if(btn){ btn.disabled=false; btn.classList.remove('spinning'); }
+      showToast(DATA_STATUS.source==='real' ? ('已刷新 · 数据 '+DATA_STATUS.lastSync) : '已刷新 · 当前为演示数据');
+    });
+    return;
+  }
+  var done=function(){
     if(btn){ btn.disabled=false; btn.classList.remove('spinning'); }
-    showToast(DATA_STATUS.source==='real' ? ('已刷新 · 数据 '+DATA_STATUS.lastSync) : '已刷新 · 当前为演示数据');
-  });
+    showToast('已刷新实时行情');
+  };
+  refreshLiveQuotes().then(function(){ refreshMarketQuotes(); refreshCloudNews(); }).catch(function(){}).finally(done);
 }
 
 function setRefreshInterval(v){
@@ -3255,8 +3266,37 @@ function fetchData(cb){
       }
     })
     .catch(function(e){
-      if(window.__BOOT__){ try{ DATA_STATUS={source:'real',lastSync:window.__BOOT__.updatedAt,provider:'iFinD'}; mergeRealData(window.__BOOT__); updateDataStatus('真实数据(内置离线版) · '+window.__BOOT__.updatedAt+' · 来源：同花顺iFinD','real'); updateLastUpdated(window.__BOOT__.updatedAt); if(cb) cb(true); return; }catch(_){} }
-      updateDataStatus('演示数据 · 建议配置同花顺iFinD以获取真实行情','demo');
+      // 在线模式：以腾讯 gtimg 为实时行情源，data.json 仅作为 iFinD 增强快照；缺失时不降级为 demo
+      if(!isLocalFile()){
+        if(window.__BOOT__ && window.__BOOT__.updatedAt){
+          try{
+            DATA_STATUS={source:'real',lastSync:window.__BOOT__.updatedAt,provider:'tencent-ifind'};
+            mergeRealData(window.__BOOT__);
+            updateDataStatus('在线模式 · 快照 '+window.__BOOT__.updatedAt+' · 行情源：腾讯实时','real');
+            updateLastUpdated(window.__BOOT__.updatedAt);
+            if(cb) cb(true);
+            return;
+          }catch(err){
+            console.warn('[fetchData] 内置快照合并失败，将只使用腾讯实时源:', err);
+          }
+        }
+        updateDataStatus('在线模式 · 行情源：腾讯云端实时','real');
+        updateLastUpdated('');
+        if(cb) cb(true);
+        return;
+      }
+      // 本地 file:// 模式：无 data.json 且无在线链接，只能显示 demo
+      if(window.__BOOT__ && window.__BOOT__.updatedAt){
+        try{
+          DATA_STATUS={source:'real',lastSync:window.__BOOT__.updatedAt,provider:'tencent-ifind'};
+          mergeRealData(window.__BOOT__);
+          updateDataStatus('真实数据(内置离线版) · '+window.__BOOT__.updatedAt+' · 来源：同花顺iFinD','real');
+          updateLastUpdated(window.__BOOT__.updatedAt);
+          if(cb) cb(true);
+          return;
+        }catch(_){}
+      }
+      updateDataStatus('演示数据 · 请通过下方在线链接访问以同步真实行情','demo');
       updateLastUpdated('');
       if(cb) cb(false);
     });
@@ -3289,41 +3329,46 @@ function syncRealData(){
 
 function mergeRealData(data){
   console.log('[mergeRealData] 开始合并真实数据，更新时间:', data && data.updatedAt);
-  if(data.reports) saveData(REPORTS_KEY,data.reports);
-  if(data.market) saveData(MARKET_KEY,data.market);
-  if(data.trend) saveData(TREND_KEY,data.trend);
-  if(data.hotnews) saveData(HOTNEWS_KEY,data.hotnews);
-  if(data.macro) saveData(MACRO_KEY,data.macro);
-  if(data.policy) saveData(SK+'policy',data.policy);
-  if(data.stocks){
-    var custom=loadData(CUSTOM_KEY,{});
-    var updatedCodes=[];
-    Object.keys(data.stocks).forEach(function(code){
-      var target=STOCKS[code]||custom[code];
-      if(!target){
-        // data.json 新增股票：自动创建占位对象
-        target=makeCustomStock(code,data.stocks[code].name||code);
-        custom[code]=target;
-      }
-      var u=data.stocks[code];
-      var fields=['price','changePct','mktCap','pe','low52','high52','pb','financial','capital','analysis','name'];
-      var missing=[];
-      fields.forEach(function(k){
-        if(u[k]!==undefined && u[k]!==null) target[k]=u[k];
+  try{
+    if(data.reports) saveData(REPORTS_KEY,data.reports);
+    if(data.market) saveData(MARKET_KEY,data.market);
+    if(data.trend) saveData(TREND_KEY,data.trend);
+    if(data.hotnews) saveData(HOTNEWS_KEY,data.hotnews);
+    if(data.macro) saveData(MACRO_KEY,data.macro);
+    if(data.policy) saveData(SK+'policy',data.policy);
+    if(data.stocks){
+      var custom=loadData(CUSTOM_KEY,{});
+      var updatedCodes=[];
+      Object.keys(data.stocks).forEach(function(code){
+        var target=STOCKS[code]||custom[code];
+        if(!target){
+          // data.json 新增股票：自动创建占位对象
+          target=makeCustomStock(code,data.stocks[code].name||code);
+          custom[code]=target;
+        }
+        var u=data.stocks[code];
+        var fields=['price','changePct','mktCap','pe','low52','high52','pb','financial','capital','analysis','name'];
+        var missing=[];
+        fields.forEach(function(k){
+          if(u[k]!==undefined && u[k]!==null) target[k]=u[k];
+        });
+        ['price','changePct','mktCap','pe'].forEach(function(k){
+          if(target[k]===undefined || target[k]===null || target[k]==='') missing.push(k);
+        });
+        if(missing.length){
+          console.warn('[mergeRealData] '+code+' 字段缺失:', missing.join(', '));
+        }
+        updatedCodes.push(code);
       });
-      ['price','changePct','mktCap','pe'].forEach(function(k){
-        if(target[k]===undefined || target[k]===null || target[k]==='') missing.push(k);
-      });
-      if(missing.length){
-        console.warn('[mergeRealData] '+code+' 字段缺失:', missing.join(', '));
-      }
-      updatedCodes.push(code);
-    });
-    console.log('[mergeRealData] 已更新', updatedCodes.length, '只股票:', updatedCodes.join(', '));
-    saveData(CUSTOM_KEY,custom);
-    saveData(SYNC_CODES_KEY,updatedCodes);
+      console.log('[mergeRealData] 已更新', updatedCodes.length, '只股票:', updatedCodes.join(', '));
+      saveData(CUSTOM_KEY,custom);
+      saveData(SYNC_CODES_KEY,updatedCodes);
+    }
+    rerenderAll();
+  }catch(err){
+    console.error('[mergeRealData] 合并失败:', err);
+    throw err;
   }
-  rerenderAll();
 }
 
 function isStockSynced(code){
@@ -3866,14 +3911,18 @@ function refreshLiveQuotes(){
     refreshMarketQuotes();
     if(got>0){
       updateLiveStatus('on','云端实时行情(腾讯)已连接 · '+got+'/'+list.length+' 只');
+      var t=new Date().toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'});
+      updateDataStatus('腾讯实时行情 · '+got+'/'+list.length+' 已更新 · '+t,'real');
       showToast('实时行情已刷新（'+got+'只）');
     }else{
       updateLiveStatus('error','所选标的暂无云端行情');
+      updateDataStatus('云端行情暂不可用 · 显示快照','error');
       showToast('暂无云端行情数据');
     }
   }).catch(function(e){
     console.warn('[refreshLiveQuotes] 腾讯源失败:',e);
     updateLiveStatus('error','云端行情获取失败，显示最近同步数据');
+    updateDataStatus('实时行情获取失败 · 显示快照','error');
     showToast('云端行情获取失败');
   });
 }
@@ -5152,7 +5201,7 @@ init();
 <div class="data-status-bar" id="data-status-bar">
   <div class="dsb-left">
     <span class="data-status-dot demo" id="data-status-dot"></span>
-    <span id="data-status-text">演示数据 · 建议配置 iFinD 数据源以获取真实行情</span>
+    <span id="data-status-text">在线模式 · 行情源：腾讯云端实时</span>
   </div>
   <div class="dsb-right">
     <span id="last-update-mini" class="last-update-mini"></span>
