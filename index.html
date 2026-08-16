@@ -1907,6 +1907,9 @@ function isPrivateUnlocked(){
     return true;
   }catch(e){ return false; }
 }
+function isPrivateLocked(){
+  return !isPrivateUnlocked();
+}
 function showLockPlaceholders(){
   ['deep-report-list','sim-report-list','watch-list'].forEach(function(id){
     var el=document.getElementById(id);
@@ -3431,6 +3434,11 @@ function addDeepReport(){
 }
 function renderDeepReports(){
   var list=loadData(DEEP_KEY,sampleDeepReports);
+  if(!Array.isArray(list) || isPrivateLocked()){
+    var el=document.getElementById('deep-report-list');
+    if(el) el.innerHTML='<div class="wb-lock"><div class="wb-lock-icon">锁</div><div class="wb-lock-t">私密数据已加密</div><div class="wb-lock-s">深度诊断已加密保护</div><button class="wb-unlock-btn" onclick="showUnlockModal()">输入密码解锁</button></div>';
+    return;
+  }
   var html='';
   if(!list.length){
     html='<div class="rep-empty">暂无体检报告。<br>在对话中发送「调用诊断Skill，分析 股票代码」即可生成真实体检报告。</div>';
@@ -3483,6 +3491,11 @@ function addSimReport(){
 }
 function renderSimReports(){
   var list=loadData(SIM_KEY,sampleSimReports);
+  if(!Array.isArray(list) || isPrivateLocked()){
+    var el=document.getElementById('sim-report-list');
+    if(el) el.innerHTML='<div class="wb-lock"><div class="wb-lock-icon">锁</div><div class="wb-lock-t">私密数据已加密</div><div class="wb-lock-s">事件推演已加密保护</div><button class="wb-unlock-btn" onclick="showUnlockModal()">输入密码解锁</button></div>';
+    return;
+  }
   var html='';
   if(!list.length){
     html='<div class="rep-empty">暂无推演报告。<br>在对话中发送「调用推演Skill，分析 某事件」即可生成真实沙盘推演报告。</div>';
@@ -3513,6 +3526,11 @@ var currentStock=null;
 
 function renderWatch(){
   var fullList=loadData(WATCH_KEY,sampleWatchlist);
+  if(!Array.isArray(fullList) || isPrivateLocked()){
+    var el=document.getElementById('watch-list');
+    if(el) el.innerHTML='<div class="wb-lock"><div class="wb-lock-icon">锁</div><div class="wb-lock-t">私密数据已加密</div><div class="wb-lock-s">自选股已加密保护</div><button class="wb-unlock-btn" onclick="showUnlockModal()">输入密码解锁</button></div>';
+    return;
+  }
   var list=getFilteredWatchlist(fullList);
   var custom=loadData(CUSTOM_KEY,{});
   var liveCache=loadData(LIVE_KEY,{});
@@ -3858,7 +3876,8 @@ function fetchLiveQuote(code){
 
 function refreshLiveQuotes(){
   var list=loadData(WATCH_KEY,sampleWatchlist);
-  if(!list.length){ showToast('自选池为空'); return; }
+  if(!Array.isArray(list) || isPrivateLocked()){ console.log('[refreshLiveQuotes] 自选股未解锁，跳过实时拉取'); return Promise.resolve(); }
+  if(!list.length){ showToast('自选池为空'); return Promise.resolve(); }
   // 本地模式且本地 API 可用：走 node server.js / iFinD
   if(isLocalMode() && LOCAL_API_OK===true){
     updateLiveStatus('off','正在刷新实时行情…');
@@ -4329,6 +4348,7 @@ function updateFilterInfo(){
 
 function getFilteredWatchlist(list){
   if(!list) list=loadData(WATCH_KEY,sampleWatchlist);
+  if(!Array.isArray(list)) return [];
   var filter=getWatchFilter();
   var colors=getStockColors();
   var stockTags=getStockTags();
